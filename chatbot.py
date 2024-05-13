@@ -1,46 +1,54 @@
-!pip install openai
-!pip install openai==0.28
-# Import necessary libraries
-import os
+
 import openai
+import random
 
-# Set up your OpenAI API key
-os.environ['OPENAI_API_KEY'] = 'sk-proj-B0jq6MIySx8XRtg5PNo5T3BlbkFJlJ0fpaTM4Gzovz3moXY6'  # Replace 'your-api-key' with your actual OpenAI API key
-openai.api_key = os.getenv('OPENAI_API_KEY')
+# Setting up the API key
+openai.api_key = 'sk-proj-6uxLdYSpxr1IcpzJlyryT3BlbkFJTbMwIp7bEWpwXM1pf2Kd' #Replace API key with the actual API key here... 
 
-# Store conversation history to maintain context
-conversation_history = []
-
-# Function to set the initial context for the chatbot
-def initialize_chat():
-    # Set the initial context to orient the chatbot
-    conversation_history.append({"role": "system", "content": "You are a helpful assistant knowledgeable in organizational change management."})
-
-# Function to send prompts to ChatGPT and receive responses using the updated API for newer versions
-def ask_chatgpt(prompt):
-    conversation_history.append({"role": "user", "content": prompt})
+def get_openai_chat_response(message):
     try:
+        # Call to OpenAI's chat completions API
         response = openai.ChatCompletion.create(
-            model="gpt-4-turbo",  # Specify the model you are using, for example, "gpt-4"
-            messages=conversation_history
+            model="gpt-4-turbo",
+            messages=[{"role": "system", "content": "You are chatting with a helpful assistant."},
+                      {"role": "user", "content": message}],
+            max_tokens=150
         )
-        answer = response.choices[0].message['content']
-        conversation_history.append({"role": "system", "content": answer})
-        return answer
+        return response['choices'][0]['message']['content'].strip()
     except Exception as e:
-        return f"An error occurred: {str(e)}"  # Enhanced error handling with user-friendly message
+        print(f"An error occurred: {e}")
+        return "I am sorry, I couldn't process your request."
 
-# Function to interactively test the chatbot
-def test_chatbot():
-    print("Chatbot initialized. Type 'exit' to stop.")
-    initialize_chat()  # Initialize chat with the set context before starting
-    while True:
-        user_input = input("You: ")
-        if user_input.lower() == 'exit':
-            print("Exiting chatbot.")
-            break
-        response = ask_chatgpt(user_input)
-        print("ChatGPT:", response)
+# Define greetings inputs and responses
+GREETING_INPUTS = ("hello", "hi", "greetings", "sup", "what's up", "hey")
+GREETING_RESPONSES = ["hi", "hey", "nods", "hi there", "hello", "I am glad you are talking to me"]
 
-# Call the test function to start interacting with the chatbot
-test_chatbot()
+def greeting(sentence):
+    """If user's input is a greeting, return a greeting response"""
+    for word in sentence.split():
+        if word.lower() in GREETING_INPUTS:
+            return random.choice(GREETING_RESPONSES)
+
+def main():
+    flag = True
+    print("ROBO: My name is Robo. I will answer your queries about Chatbots. If you want to exit, type Bye!")
+    
+    while flag:
+        user_response = input().lower()
+        if user_response != 'bye':
+            if user_response == 'thanks' or user_response == 'thank you':
+                flag = False
+                print("ROBO: You're welcome!")
+            else:
+                if greeting(user_response) is not None:
+                    print("ROBO: " + greeting(user_response))
+                else:
+                    print("ROBO: ", end="")
+                    print(get_openai_chat_response(user_response))
+        else:
+            flag = False
+            print("ROBO: Bye! take care..")
+
+# Run the main function
+if __name__ == "__main__":
+    main()
