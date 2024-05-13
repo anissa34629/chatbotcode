@@ -3,7 +3,7 @@ import openai
 import random
 
 # Setting up the API key
-openai.api_key = 'sk-proj-6uxLdYSpxr1IcpzJlyryT3BlbkFJTbMwIp7bEWpwXM1pf2Kd' #Replace API key with the actual API key here... 
+openai.api_key = 'sk-proj-6uxLdYSpxr1IcpzJlyryT3BlbkFJTbMwIp7bEWpwXM1pf2Kd' 
 
 def get_openai_chat_response(message):
     try:
